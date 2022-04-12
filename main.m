@@ -5,13 +5,16 @@ close all
 
 %% Initialization of Variables for Simulink
 
+clk_in = clock;
+
 disp('defining variables for simulation through simulink')
 
 % simulation time
-T = 20;
+T = 10;
 
 % desired values
-qd = [pi/3; -pi/4; pi/3];
+%qd = [-pi/2; 0; 0];
+qd = [pi/3; -pi/7; pi/4];
 qd_dot = [0;0;0];
 qd_2dot = [0;0;0];
 qd_3dot = [0;0;0];
@@ -19,13 +22,14 @@ qd_4dot = [0;0;0];
 
 % Initial conditions for the integrators for q and theta variables
 q0 = qd;
+%q0 = [pi/3; -pi/4; pi/3];
 theta0 = q0;
 qd0 = [0;0;0];
 thetad0 = [0;0;0];
 
 % external force parameters
-T1 = 5;
-T2 = 5.5;
+T1 = 1.5;
+T2 = 2;
 link = 1;
 switch link
     case 1
@@ -37,16 +41,19 @@ switch link
 end
 
 % Inertia parameters 
-m = 10;
+m = 1;
 mm = 1;
 d = 0.5;
 I = 3.33;
 g0 = 9.81;
+% D = diag([50 20 100]);
 D = diag([500 500 500]);
 
 param = [m mm d I g0]';
 
 % PD parameters
+% Kp = diag([1000 900 750]);
+% Kd = diag([500 200 650]);
 Kp = diag([800 800 800]);
 Kd = diag([500 500 500]);
 
@@ -60,8 +67,8 @@ fpi_params = [eta0 eps max_it];
 % Motor parameters 
 m_m = 1;
 I_m = 0.01;
-% k = 1000;
 k = 1000;
+%k = 3*360/(2*pi);
 k_r = 18;
 
 motor = [I_m*k_r^2,k];
@@ -70,15 +77,11 @@ motor = [I_m*k_r^2,k];
 B = diag([I_m*k_r^2,I_m*k_r^2,I_m*k_r^2]);
 invB = B^-1;
 
-% stiffness matrix
-K = diag([k,k,k]);
-invK = K^-1;
-
 %% ESP outputs
 
 disp('simulating using ESP control');
 
-out = sim('planar_3R_u_ESP');
+out = sim('ESP_poly');
 
 t_ESP = out.tout;
 dim = max(size(t_ESP));
@@ -112,7 +115,7 @@ u_ESP = out.u;
 
 disp('simulating using ESP+ control');
 
-out2 = sim('planar_3R_u_ESPp');
+out2 = sim('ESPp_poly');
 
 t_ESPp = out2.tout;
 dim2 = max(size(t_ESPp));
@@ -144,31 +147,31 @@ u_ESPp = out2.u;
 
 %% PD outputs
 
-disp('simulating using PD control');
+disp('simulating using simple PD control');
 
-out3 = sim('PD_planar_3R');
+out3 = sim('PD_poly');
 
 t_PD = out3.tout;
-dim2 = max(size(t_PD));
+dim3 = max(size(t_PD));
 
-qd_vec3 = [qd(1)*ones([1 dim2]); qd(2)*ones([1 dim2]); qd(3)*ones([1 dim2]);]';
+qd_vec3 = [qd(1)*ones([1 dim3]); qd(2)*ones([1 dim3]); qd(3)*ones([1 dim3]);]';
 
 q_PD_sim = out3.q;
-q_PD = zeros(dim2, 3);
+q_PD = zeros(dim3, 3);
 
 q_PD(:, 1) = q_PD_sim(1, 1, :);
 q_PD(:, 2) = q_PD_sim(2, 1, :);
 q_PD(:, 3) = q_PD_sim(3, 1, :);
 
 q_dot_PD_sim = out3.q_dot;
-q_dot_PD = zeros(dim2, 3);
+q_dot_PD = zeros(dim3, 3);
 
 q_dot_PD(:, 1) = q_dot_PD_sim(1, 1, :);
 q_dot_PD(:, 2) = q_dot_PD_sim(2, 1, :);
 q_dot_PD(:, 3) = q_dot_PD_sim(3, 1, :);
 
 q_2dot_PD_sim = out3.q_2dot;
-q_2dot_PD = zeros(dim2, 3);
+q_2dot_PD = zeros(dim3, 3);
 
 q_2dot_PD(:, 1) = q_2dot_PD_sim(1, 1, :);
 q_2dot_PD(:, 2) = q_2dot_PD_sim(2, 1, :);
@@ -176,7 +179,45 @@ q_2dot_PD(:, 3) = q_2dot_PD_sim(3, 1, :);
 
 u_PD = out3.u;
 
+save('Workspace');
+
 %robot_video;
+
+%% Writing files for CoppeliaSim
+
+% ESP control
+ESP_ID = fopen('ESP.txt','w');
+
+for i=1:dim
+    q1 = q_ESP(i,1); q2 = q_ESP(i,2); q3 = q_ESP(i,3);
+    dq1 = q_dot_ESP(i,1); dq2 = q_dot_ESP(i,2); dq3 = q_dot_ESP(i,3);
+    fprintf(ESP_ID,'%f \t %f \t %f \t %f \t %f \t %f \n',q1,q2,q3,dq1,dq2,dq3);
+end
+
+fclose(ESP_ID);
+
+% ESPp control
+ESPp_ID = fopen('ESPp.txt','w');
+
+for i=1:dim
+    q1 = q_ESPp(i,1); q2 = q_ESPp(i,2); q3 = q_ESPp(i,3);
+    dq1 = q_dot_ESPp(i,1); dq2 = q_dot_ESPp(i,2); dq3 = q_dot_ESPp(i,3);
+    fprintf(ESPp_ID,'%f \t %f \t %f \t %f \t %f \t %f \n',q1,q2,q3,dq1,dq2,dq3);
+end
+
+fclose(ESPp_ID);
+
+% PD control
+PD_ID = fopen('PD.txt','w');
+
+for i=1:dim
+    q1 = q_PD(i,1); q2 = q_PD(i,2); q3 = q_PD(i,3);
+    dq1 = q_dot_PD(i,1); dq2 = q_dot_PD(i,2); dq3 = q_dot_PD(i,3);
+    fprintf(PD_ID,'%f \t %f \t %f \t %f \t %f \t %f \n',q1,q2,q3,dq1,dq2,dq3);
+end
+
+fclose(PD_ID);
+
 
 %% Plots
 
@@ -206,6 +247,7 @@ xlabel('time [s]');
 l3 = legend('\textbf{$\tilde{q}_1$}', '\textbf{$\tilde{q}_2$}', '\textbf{$\tilde{q}_3$}', 'location', 'northeast');
 set(l3, 'interpreter', 'latex');
 
+
 figure('name', 'Q_DOT PROFILES');
 
 subplot(131)
@@ -228,6 +270,7 @@ title('q_{dot} profile with PD');
 ylabel('q_{dot} [rad/s]');
 xlabel('time [s]');
 legend('q_{1,dot}', 'q_{2,dot}', 'q_{3,dot}', 'location', 'northeast');
+
 
 figure('name', 'Q_2DOT PROFILES');
 
@@ -252,6 +295,7 @@ ylabel('q_{2dot} [rad/s^2]');
 xlabel('time [s]');
 legend('q_{1,2dot}', 'q_{2,2dot}', 'q_{3,2dot}', 'location', 'northeast');
 
+
 figure('name', 'U PROFILES');
 
 subplot(131)
@@ -274,3 +318,6 @@ title('u profile with PD');
 ylabel('u [Nm]');
 xlabel('time [s]');
 legend('u_1', 'u_2', 'u_3', 'location', 'northeast');
+
+clk_fn = clock;
+execution_time = clk_fn - clk_in
