@@ -27,9 +27,9 @@ thetad0 = [0; 0; 0];
 
 % external force parameters acting from T1 to T2 inside T.
 % F is acting along the orthogonal direction wrt the link where it acts
-T1 = 1.5;
-T2 = 2;
-link = 1;
+T1 = 2;
+T2 = 3;
+link = 2;
 switch link
     case 1
         F = 1000*[-sin(q0(1)); cos(q0(1))];
@@ -72,6 +72,7 @@ motor = [I_m*k_r^2, k];
 
 % Inertia matrix motor
 B = diag([I_m*k_r^2,I_m*k_r^2,I_m*k_r^2]);
+invB = inv(B);
 
 %% ESP control simulation
 
