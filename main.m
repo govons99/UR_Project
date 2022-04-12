@@ -1,4 +1,4 @@
-% utilities
+%% Utilities
 clc
 clear
 close all
@@ -12,22 +12,21 @@ disp('defining variables for simulation through simulink')
 % simulation time
 T = 10;
 
-% desired values
-%qd = [-pi/2; 0; 0];
+% desired values -> we want that the link is standing still
 qd = [pi/3; -pi/7; pi/4];
-qd_dot = [0;0;0];
-qd_2dot = [0;0;0];
-qd_3dot = [0;0;0];
-qd_4dot = [0;0;0];
+qd_dot = [0; 0; 0];
+qd_2dot = [0; 0; 0];
+qd_3dot = [0; 0; 0];
+qd_4dot = [0; 0; 0];
 
 % Initial conditions for the integrators for q and theta variables
 q0 = qd;
-%q0 = [pi/3; -pi/4; pi/3];
 theta0 = q0;
-qd0 = [0;0;0];
-thetad0 = [0;0;0];
+qd0 = [0; 0; 0];
+thetad0 = [0; 0; 0];
 
-% external force parameters
+% external force parameters acting from T1 to T2 inside T.
+% F is acting along the orthogonal direction wrt the link where it acts
 T1 = 1.5;
 T2 = 2;
 link = 1;
@@ -41,19 +40,18 @@ switch link
 end
 
 % Inertia parameters 
-m = 1;
-mm = 1;
-d = 0.5;
-I = 3.33;
-g0 = 9.81;
-% D = diag([50 20 100]);
-D = diag([500 500 500]);
+m = 1;      % mass of the link
+mm = 1;     % mass of the motor
+d = 0.5;    % distance of the CoM
+I = 3.33;   % inertia of the link
+g0 = 9.81;  % gravity term
 
 param = [m mm d I g0]';
 
+% Computation of the damping matrix
+D = diag([500 500 500]);
+
 % PD parameters
-% Kp = diag([1000 900 750]);
-% Kd = diag([500 200 650]);
 Kp = diag([800 800 800]);
 Kd = diag([500 500 500]);
 
@@ -65,23 +63,21 @@ max_it = 100;
 fpi_params = [eta0 eps max_it];
 
 % Motor parameters 
-m_m = 1;
-I_m = 0.01;
-k = 1000;
-%k = 3*360/(2*pi);
-k_r = 18;
+m_m = 1;    % motor masse
+I_m = 0.01; % motor inertia
+k = 1000;   % constant for transmission stiffness
+k_r = 18;   % [??]
 
-motor = [I_m*k_r^2,k];
+motor = [I_m*k_r^2, k];
 
 % Inertia matrix motor
 B = diag([I_m*k_r^2,I_m*k_r^2,I_m*k_r^2]);
-invB = B^-1;
 
-%% ESP outputs
+%% ESP control simulation
 
 disp('simulating using ESP control');
 
-out = sim('ESP_poly');
+out = sim('planar_3R_u_ESP');
 
 t_ESP = out.tout;
 dim = max(size(t_ESP));
@@ -111,11 +107,11 @@ q_2dot_ESP(:, 3) = q_2dot_ESP_sim(3, 1, :);
 
 u_ESP = out.u;
 
-%% ESP+ outputs
+%% ESP+ constrol simulation
 
 disp('simulating using ESP+ control');
 
-out2 = sim('ESPp_poly');
+out2 = sim('planar_3R_u_ESPp');
 
 t_ESPp = out2.tout;
 dim2 = max(size(t_ESPp));
@@ -145,11 +141,11 @@ q_2dot_ESPp(:, 3) = q_2dot_ESPp_sim(3, 1, :);
 
 u_ESPp = out2.u;
 
-%% PD outputs
+%% PD control simulation
 
 disp('simulating using simple PD control');
 
-out3 = sim('PD_poly');
+out3 = sim('planar_3R_u_PD');
 
 t_PD = out3.tout;
 dim3 = max(size(t_PD));
@@ -183,7 +179,7 @@ save('Workspace');
 
 %robot_video;
 
-%% Writing files for CoppeliaSim
+%% Saving variables for CoppeliaSim
 
 % ESP control
 ESP_ID = fopen('ESP.txt','w');
