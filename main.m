@@ -29,7 +29,7 @@ thetad0 = [0; 0; 0];
 % F is acting along the orthogonal direction wrt the link where it acts
 T1 = 2;
 T2 = 3;
-link = 2;
+link = 3;
 switch link
     case 1
         F = 1000*[-sin(q0(1)); cos(q0(1))];
@@ -222,75 +222,78 @@ figure('name', 'Q PROFILES')
 
 subplot(131)
 plot(t_ESP, q_ESP - qd_vec, 'linewidth', 2); hold on; grid;
-t1 = title('\textbf{$\tilde{q}$ profile with ESP}'); set(t1, 'interpreter', 'latex');
-y1 = ylabel('\textbf{$\tilde{q}$ [rad]} '); set(y1, 'interpreter', 'latex');
+title('\textbf{$\tilde{q}$ profile with ESP}','interpreter', 'latex');
+ylabel('\textbf{$\tilde{q}$ [rad]} ','interpreter', 'latex');
 xlabel('time [s]');
-l1 = legend('\textbf{$\tilde{q}_1$}', '\textbf{$\tilde{q}_2$}', '\textbf{$\tilde{q}_3$}', 'location', 'northeast');
-set(l1, 'interpreter', 'latex');
+legend('\textbf{$\tilde{q}_1$}', '\textbf{$\tilde{q}_2$}', '\textbf{$\tilde{q}_3$}', 'location', 'northeast','interpreter', 'latex');
 
 subplot(132)
 plot(t_ESPp, q_ESPp - qd_vec2, 'linewidth', 2); hold on; grid;
-t2 = title('\textbf{$\tilde{q}$ profile with ESP}'); set(t2, 'interpreter', 'latex');
-y2 = ylabel('\textbf{$\tilde{q}$ [rad]} '); set(y2, 'interpreter', 'latex');
+title('\textbf{$\tilde{q}$ profile with ESP+}','interpreter', 'latex');
+ylabel('\textbf{$\tilde{q}$ [rad]} ','interpreter', 'latex');
 xlabel('time [s]');
-l2 = legend('\textbf{$\tilde{q}_1$}', '\textbf{$\tilde{q}_2$}', '\textbf{$\tilde{q}_3$}', 'location', 'northeast');
-set(l2, 'interpreter', 'latex');
+legend('\textbf{$\tilde{q}_1$}', '\textbf{$\tilde{q}_2$}', '\textbf{$\tilde{q}_3$}', 'location', 'northeast','interpreter', 'latex');
 
 subplot(133)
 plot(t_PD, q_PD - qd_vec3, 'linewidth', 2); hold on; grid;
-t3 = title('\textbf{$\tilde{q}$ profile with PD}'); set(t3, 'interpreter', 'latex');
-y3 = ylabel('\textbf{$\tilde{q}$ [rad]} '); set(y3, 'interpreter', 'latex');
+title('\textbf{$\tilde{q}$ profile with PD}','interpreter', 'latex');
+ylabel('\textbf{$\tilde{q}$ [rad]} ','interpreter', 'latex');
 xlabel('time [s]');
-l3 = legend('\textbf{$\tilde{q}_1$}', '\textbf{$\tilde{q}_2$}', '\textbf{$\tilde{q}_3$}', 'location', 'northeast');
-set(l3, 'interpreter', 'latex');
+legend('\textbf{$\tilde{q}_1$}', '\textbf{$\tilde{q}_2$}', '\textbf{$\tilde{q}_3$}', 'location', 'northeast','interpreter', 'latex');
+
+set(gcf, 'Position', [100 100 1000 500]);
 
 
 figure('name', 'Q_DOT PROFILES');
 
 subplot(131)
 plot(t_ESP, q_dot_ESP, 'linewidth', 2); hold on; grid;
-title('q_{dot} profile with ESP');
-ylabel('q_{dot} [rad/s]');
+title('$\dot{q}$ profile with ESP','interpreter', 'latex');
+ylabel('$\dot{q}$ [rad/s]','interpreter', 'latex');
 xlabel('time [s]');
-legend('q_{1,dot}', 'q_{2,dot}', 'q_{3,dot}', 'location', 'northeast');
+legend('$\dot{q}_1$', '$\dot{q}_2$', '$\dot{q}_3$', 'location', 'northeast','interpreter', 'latex');
 
 subplot(132)
 plot(t_ESPp, q_dot_ESPp, 'linewidth', 2); hold on; grid;
-title('q_{dot} profile with ESP+');
-ylabel('q_{dot} [rad/s]');
+title('$\dot{q}$ profile with ESP+','interpreter', 'latex');
+ylabel('$\dot{q}$ [rad/s]','interpreter', 'latex');
 xlabel('time [s]');
-legend('q_{1,dot}', 'q_{2,dot}', 'q_{3,dot}', 'location', 'northeast');
+legend('$\dot{q}_1$', '$\dot{q}_2$', '$\dot{q}_3$', 'location', 'northeast','interpreter', 'latex');
 
 subplot(133)
 plot(t_PD, q_dot_PD, 'linewidth', 2); hold on; grid;
-title('q_{dot} profile with PD');
-ylabel('q_{dot} [rad/s]');
+title('$\dot{q}$ profile with PD','interpreter', 'latex');
+ylabel('$\dot{q}$ [rad/s]','interpreter', 'latex');
 xlabel('time [s]');
-legend('q_{1,dot}', 'q_{2,dot}', 'q_{3,dot}', 'location', 'northeast');
+legend('$\dot{q}_1$', '$\dot{q}_2$', '$\dot{q}_3$', 'location', 'northeast','interpreter', 'latex');
+
+set(gcf, 'Position', [100 100 1000 500]);
 
 
 figure('name', 'Q_2DOT PROFILES');
 
 subplot(131)
 plot(t_ESP, q_2dot_ESP, 'linewidth', 2); hold on; grid;
-title('q_{2dot} profile with ESP');
-ylabel('q_{2dot} [rad/s^2]');
+title('$\ddot{q}$ profile with ESP','interpreter', 'latex');
+ylabel('$\ddot{q} \ [rad/s^2]$','interpreter', 'latex');
 xlabel('time [s]');
-legend('q_{1,2dot}', 'q_{2,2dot}', 'q_{3,2dot}', 'location', 'northeast');
+legend('$\ddot{q}_1$', '$\ddot{q}_2$', '$\ddot{q}_3$', 'location', 'northeast','interpreter', 'latex');
 
 subplot(132)
 plot(t_ESPp, q_2dot_ESPp, 'linewidth', 2); hold on; grid;
-title('q_{2dot} profile with ESP+');
-ylabel('q_{2dot} [rad/s^2]');
+title('$\ddot{q}$ profile with ESP+','interpreter', 'latex');
+ylabel('$\ddot{q} \ [rad/s^2]$','interpreter', 'latex');
 xlabel('time [s]');
-legend('q_{1,2dot}', 'q_{2,2dot}', 'q_{3,2dot}', 'location', 'northeast');
+legend('$\ddot{q}_1$', '$\ddot{q}_2$', '$\ddot{q}_3$', 'location', 'northeast','interpreter', 'latex');
 
 subplot(133)
 plot(t_PD, q_2dot_PD, 'linewidth', 2); hold on; grid;
-title('q_{2dot} profile with PD');
-ylabel('q_{2dot} [rad/s^2]');
+title('$\ddot{q}$ profile with PD','interpreter', 'latex');
+ylabel('$\ddot{q} \ [rad/s^2]$','interpreter', 'latex');
 xlabel('time [s]');
-legend('q_{1,2dot}', 'q_{2,2dot}', 'q_{3,2dot}', 'location', 'northeast');
+legend('$\ddot{q}_1$', '$\ddot{q}_2$', '$\ddot{q}_3$', 'location', 'northeast','interpreter', 'latex');
+
+set(gcf, 'Position', [100 100 1000 500]);
 
 
 figure('name', 'U PROFILES');
@@ -315,6 +318,8 @@ title('u profile with PD');
 ylabel('u [Nm]');
 xlabel('time [s]');
 legend('u_1', 'u_2', 'u_3', 'location', 'northeast');
+
+set(gcf, 'Position', [100 100 1000 500]);
 
 clk_fn = clock;
 execution_time = clk_fn - clk_in
