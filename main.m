@@ -13,7 +13,8 @@ disp('defining variables for simulation through simulink')
 T = 10;
 
 % desired values -> we want that the link is standing still
-qd = [pi/3; -pi/7; pi/4];
+%qd = [pi/3; -pi/7; pi/4];
+qd = [pi/2; 0; 0];
 qd_dot = [0; 0; 0];
 qd_2dot = [0; 0; 0];
 qd_3dot = [0; 0; 0];
@@ -49,7 +50,9 @@ g0 = 9.81;  % gravity term
 param = [m mm d I g0]';
 
 % Computation of the damping matrix
-D = diag([500 500 500]);
+d_par = 500;
+
+D = diag([d_par d_par d_par]);
 
 % PD parameters
 Kp = diag([800 800 800]);
@@ -65,8 +68,8 @@ fpi_params = [eta0 eps max_it];
 % Motor parameters 
 m_m = 1;    % motor masse
 I_m = 0.01; % motor inertia
-k = 1000;   % constant for transmission stiffness
-k_r = 18;   % [??]
+k = 500;    % constant for transmission stiffness
+k_r = 18;   % reduction ratio
 
 motor = [I_m*k_r^2, k];
 
@@ -108,7 +111,7 @@ q_2dot_ESP(:, 3) = q_2dot_ESP_sim(3, 1, :);
 
 u_ESP = out.u;
 
-%% ESP+ constrol simulation
+%% ESP+ control simulation
 
 disp('simulating using ESP+ control');
 
@@ -242,6 +245,8 @@ xlabel('time [s]');
 legend('\textbf{$\tilde{q}_1$}', '\textbf{$\tilde{q}_2$}', '\textbf{$\tilde{q}_3$}', 'location', 'northeast','interpreter', 'latex');
 
 set(gcf, 'Position', [100 100 1000 500]);
+saveas(gcf, "q_tilda.eps", "epsc");
+saveas(gcf, "q_tilda.fig", "fig");
 
 
 figure('name', 'Q_DOT PROFILES');
@@ -268,6 +273,8 @@ xlabel('time [s]');
 legend('$\dot{q}_1$', '$\dot{q}_2$', '$\dot{q}_3$', 'location', 'northeast','interpreter', 'latex');
 
 set(gcf, 'Position', [100 100 1000 500]);
+saveas(gcf, "q_dot.eps", "epsc");
+saveas(gcf, "q_dot.fig", "fig");
 
 
 figure('name', 'Q_2DOT PROFILES');
@@ -294,6 +301,8 @@ xlabel('time [s]');
 legend('$\ddot{q}_1$', '$\ddot{q}_2$', '$\ddot{q}_3$', 'location', 'northeast','interpreter', 'latex');
 
 set(gcf, 'Position', [100 100 1000 500]);
+saveas(gcf, "q_2dot.eps", "epsc");
+saveas(gcf, "q_2dot.fig", "fig");
 
 
 figure('name', 'U PROFILES');
@@ -320,6 +329,8 @@ xlabel('time [s]');
 legend('u_1', 'u_2', 'u_3', 'location', 'northeast');
 
 set(gcf, 'Position', [100 100 1000 500]);
+saveas(gcf, "control.eps", "epsc");
+saveas(gcf, "control.fig", "fig");
 
 clk_fn = clock;
 execution_time = clk_fn - clk_in
